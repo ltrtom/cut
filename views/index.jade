@@ -1,0 +1,16 @@
+doctype html
+html
+  head
+    title Hello
+    link(href='//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css', rel='stylesheet', type='text/css')
+    link(href='/style.css', rel='stylesheet', type='text/css')
+  body.container
+    block header
+      header#header.well
+        span.pull-right
+          a(href='/logout').btn.btn-warning logout
+        h1.text-center
+          a(href='/') Cut
+    #global
+      block content
+    

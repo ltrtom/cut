@@ -1,0 +1,9 @@
+div.list-group
+      each message in messages
+        a(href='/email/'+message.UID).list-group-item 
+          span.from
+            =message.from.name
+          span.title
+            =message.title
+          span.pull-right
+            =moment(message.date).format('DD/MM/YY hh:mm')

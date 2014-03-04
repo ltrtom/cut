@@ -1,0 +1,32 @@
+
+#header{
+    margin-top: 20px;
+}
+
+#form-login{
+    width: 220px;
+    margin: 280px auto;
+}
+
+#form-login input{
+    width: 220px;
+    margin-top: 12px;
+}
+
+ul{
+    list-style-type: none;
+}
+
+
+#form-login div.alert{
+    margin-top: 13px;
+    margin-bottom: 0;
+}
+
+
+
+span.from{
+    width: 200px;
+    display: block;
+    float: left;
+}
