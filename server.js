@@ -1,4 +1,4 @@
-// web.js
+// web.js   
 var express = require("express");
 var logfmt = require("logfmt");
 var app = express();
@@ -16,10 +16,20 @@ var confFile = require('./conf/conf.json');
 app.set('conf', confFile);
 
 
-var loginCtrl = require('./ctrl/LoginCtrl.js');
-var inboxCtrl = require('./ctrl/InboxCtrl.js');
-loginCtrl.add_routes(app);
-inboxCtrl.add_routes(app);
+var controllers = ['LoginCtrl', 'InboxCtrl', 'keepCtrl'];
+
+controllers.forEach(function(crtl){
+    var controller = require('./ctrl/'+crtl+'.js');
+    controller.add_routes(app);
+    
+});
+
+
+// home redirect
+app.get('/', function(req, res){
+    res.render('home');
+})
+
 
 
 var port = Number(process.env.PORT || 5000);

@@ -1,9 +1,15 @@
-div.list-group
+table.table.inbox
       each message in messages
-        a(href='/email/'+message.UID).list-group-item 
-          span.from
-            =message.from.name
-          span.title
-            =message.title
-          span.pull-right
-            =moment(message.date).format('DD/MM/YY hh:mm')
+        tr
+          td
+            if message.from.name.length > 29
+              =message.from.name.substr(0, 20) + '...'
+            else
+              =message.from.name
+          td
+            a(href='/mail/'+currentMailbox+'/'+message.UID)= message.title
+          td= moment(message.date).format('DD/MM/YY hh:mm')
+      if messages.length == 0
+        tr
+          th(colspan="3") no mails
+        

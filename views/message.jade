@@ -1,9 +1,13 @@
 extends index
 
 block content
-    div.well
-      if html
-        !=html
-      else
-        =txt
+    if error
+      .alert.alert-danger= error
+    else
+      a(href='/mail/'+params.mailbox+'/'+params.uid+'/delete').btn.btn-danger: span.glyphicon.glyphicon-trash 
+      div.well
+        if html
+          !=html
+        else
+          =txt
     

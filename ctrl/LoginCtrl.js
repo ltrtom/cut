@@ -19,7 +19,10 @@ exports.add_routes = function(app){
      
      if(req.body.login === conf.login_web && hash(req.body.pass) === conf.pass_web){
          req.session.user = 'tomjam';
-         res.redirect('/');
+         if(req.session.redirect)
+            res.redirect(req.session.redirect);
+         else
+            res.redirect('/');
      }
      else{
          res.render('login',{

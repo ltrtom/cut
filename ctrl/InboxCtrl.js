@@ -3,13 +3,23 @@ var inbox = require('inbox'),
     MailParser = require("mailparser").MailParser;
 
 function isAuth(req, res, next){
+    
+    next();
+    return;
+    
+    
     if (req.session.user) {
         next();
     } else {
+        req.session.redirect = req.path;
         res.redirect('/login');
     }
 }
 
+
+function tojson(obj){
+    return JSON.stringify(obj);
+}
 
 
 function createClient(app){
@@ -26,31 +36,57 @@ exports.add_routes = function(app){
     
     
     // INDEX MAILBOX
-    app.get('/', isAuth, function(req, res){  
+    app.get('/mail/:mailbox?', isAuth, function(req, res){  
         
+       var mailbox = req.params.mailbox;
+       
+       if(!mailbox)
+           mailbox = app.get('conf').default_mailbox;
+       var render = {
+           currentMailbox: mailbox
+       };
        
        var client = createClient(app);
         client.connect();
         client.on('connect', function(){
-            client.openMailbox("INBOX", function(error, info){
+            client.openMailbox(mailbox, function(error, info){
+                if(error)
+                    throw error;
                 client.listMessages(-15, function(err, messages){
-                    res.render('home', {
-                        messages: messages.reverse()
+                    // take last 15 messages
+                    render.messages = messages.reverse();
+                    // get all mailboxes
+                    client.listMailboxes(function(err, mailboxes){
+                        if(err)
+                            throw err;
+                        render.mailboxes = mailboxes;
+                        client.close();
                     });
-                    client.close();
                 });
             });
+            
+            client.on('close', function(){
+                    res.render('inbox', render);
+            });         
         });
     });
     
     // SHOW ONE EMAIL
-    app.get('/email/:uid', isAuth, function(req, res){
+    app.get('/mail/:mailbox/:uid', isAuth, function(req, res){
        var uid = req.param('uid');
        
        var client = createClient(app);
         client.connect();
         client.on('connect', function(){
-            client.openMailbox("INBOX", function(error, info){
+            client.openMailbox(req.params.mailbox, function(error, info){
+                
+                if(error){
+                    res.render('message', {
+                        error: error
+                    });
+                    return;
+                }
+                
                 client.fetchData(uid, function(error, message){
                     var body = "";
                     var stream = client.createMessageStream(uid);
@@ -64,6 +100,7 @@ exports.add_routes = function(app){
                         
                         mailparser.on('end', function(email){
                             var render = {
+                              params: req.params,
                               html: email.html  
                             };
                             
@@ -71,6 +108,7 @@ exports.add_routes = function(app){
                                 render.txt = email.text
                             }
                             res.render('message', render);
+                            client.close();
                         });
                         
                         mailparser.write(body);
@@ -82,6 +120,51 @@ exports.add_routes = function(app){
         });
     });
     
+    
+    
+    app.get('/mail/:mailbox/search/:query', isAuth, function(req, res){
+        var client = createClient(app);
+        
+        console.log(req.params.query);
+        
+        client.connect();
+        client.on('connect', function(){
+            client.openMailbox(req.params.mailbox, function(error, info){
+                
+                
+                var query = {
+                    header: ["subject", req.params.query]
+                };
+                
+                client.search(query, function(err, seqs){
+                    res.json(seqs);
+                });
+            });
+        });
+        
+    });
+    
+    
+   // DELETE MESSAGE
+   app.get('/mail/:mailbox/:uid/delete', function(req, res){
+       var client = createClient(app);
+       client.connect();
+       client.on('connect', function(){
+           client.openMailbox(req.params.mailbox, function(error, info){
+               client.deleteMessage(req.params.uid, function(err){
+                    if(error){
+                        res.render('message', {
+                            error: err
+                        });
+                    }
+                    else{
+                        res.redirect('/mail/'+req.params.mailbox);
+                    }
+               });
+           });
+       });
+       
+   });
     
     
    // API JSON

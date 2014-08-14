@@ -1,8 +1,11 @@
 doctype html
-html
+html(ng-app='keeps')
   head
-    title Hello
+    block title 
+      title Hello
+    script(src='http://code.jquery.com/jquery-2.1.0.min.js')
     link(href='//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css', rel='stylesheet', type='text/css')
+    script(src='//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js')
     link(href='/style.css', rel='stylesheet', type='text/css')
   body.container
     block header
@@ -13,4 +16,6 @@ html
           a(href='/') Cut
     #global
       block content
+    block scripts
+  
     

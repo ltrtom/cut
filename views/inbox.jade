@@ -1,0 +1,9 @@
+extends index
+
+block content
+    ul.mailboxes
+      each mailbox in mailboxes
+        li 
+          a(href='/mail/'+mailbox.path, class=(currentMailbox === mailbox.path) ? "active" : "")= mailbox.name
+    include messages
+    

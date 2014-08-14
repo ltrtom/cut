@@ -30,3 +30,54 @@ span.from{
     display: block;
     float: left;
 }
+
+table.inbox{
+    width: 900px;
+    margin-left: 20px;
+}
+
+
+.mailboxes{
+    padding-left: 0;
+    float: left;
+    margin-right: 80px;
+}
+
+#form-keep{
+    width: 500px;
+    margin: auto;
+}
+
+#form-keep input, textarea, button{ 
+    margin-top: 5px;
+}
+
+#form-keep textarea{
+    height: 130px;
+}
+
+
+
+.mess{
+    text-align: center;
+    margin: 100px auto;
+    width: 300px;
+}
+
+section#keeps{
+    margin-top: 20px;
+}
+
+.keeps-table .keep{
+    border-radius: 3px;
+    float: left;
+    width: 300px;
+    margin-right: 3px;
+    cursor: pointer;
+}
+
+.keeps-list .keep{
+    
+}
+
+
