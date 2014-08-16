@@ -7,7 +7,11 @@ table.table.inbox
             else
               =message.from.name
           td
-            a(href='/mail/'+currentMailbox+'/'+message.UID)= message.title
+            - var url = '/mail/'+currentMailbox+'/'+message.UID
+            if message.title
+              a(href=url)= message.title
+            else
+              a(href=url) (no subject)
           td= moment(message.date).format('DD/MM/YY hh:mm')
       if messages.length == 0
         tr

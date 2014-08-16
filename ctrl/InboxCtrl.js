@@ -1,20 +1,7 @@
 var inbox = require('inbox'),
     fs    = require('fs'),
-    MailParser = require("mailparser").MailParser;
-
-function isAuth(req, res, next){
-    
-    next();
-    return;
-    
-    
-    if (req.session.user) {
-        next();
-    } else {
-        req.session.redirect = req.path;
-        res.redirect('/login');
-    }
-}
+    MailParser = require("mailparser").MailParser,
+    utils  = require('../utils/utils');
 
 
 function tojson(obj){
@@ -22,12 +9,25 @@ function tojson(obj){
 }
 
 
-function createClient(app){
+function createClient(app, req, res){
+
+    var pswd    = req.session.pswd;
+console.log(pswd);
+
+
+    var decrypt = utils.decrypt(pswd, app.get('conf').pass);
+console.log(decrypt);
+
+
+    if (!pswd || !decrypt){
+        res.redirect('login');
+    }
+
     return inbox.createConnection(false, "imap.gmail.com", {
             secureConnection: true,
             auth:{
                 user: app.get('conf').email,
-                pass: app.get('conf').pass
+                pass: decrypt
             }
         });
 }
@@ -36,7 +36,7 @@ exports.add_routes = function(app){
     
     
     // INDEX MAILBOX
-    app.get('/mail/:mailbox?', isAuth, function(req, res){  
+    app.get('/mail/:mailbox?', utils.isAuth, function(req, res){  
         
        var mailbox = req.params.mailbox;
        
@@ -46,7 +46,7 @@ exports.add_routes = function(app){
            currentMailbox: mailbox
        };
        
-       var client = createClient(app);
+       var client = createClient(app, req, res);
         client.connect();
         client.on('connect', function(){
             client.openMailbox(mailbox, function(error, info){
@@ -72,10 +72,10 @@ exports.add_routes = function(app){
     });
     
     // SHOW ONE EMAIL
-    app.get('/mail/:mailbox/:uid', isAuth, function(req, res){
+    app.get('/mail/:mailbox/:uid', utils.isAuth, function(req, res){
        var uid = req.param('uid');
        
-       var client = createClient(app);
+       var client = createClient(app, req, res);
         client.connect();
         client.on('connect', function(){
             client.openMailbox(req.params.mailbox, function(error, info){
@@ -122,8 +122,8 @@ exports.add_routes = function(app){
     
     
     
-    app.get('/mail/:mailbox/search/:query', isAuth, function(req, res){
-        var client = createClient(app);
+    app.get('/mail/:mailbox/search/:query', utils.isAuth, function(req, res){
+        var client = createClient(app, req, res);
         
         console.log(req.params.query);
         
@@ -146,8 +146,8 @@ exports.add_routes = function(app){
     
     
    // DELETE MESSAGE
-   app.get('/mail/:mailbox/:uid/delete', function(req, res){
-       var client = createClient(app);
+   app.get('/mail/:mailbox/:uid/delete', utils.isAuth, function(req, res){
+       var client = createClient(app, req, res);
        client.connect();
        client.on('connect', function(){
            client.openMailbox(req.params.mailbox, function(error, info){
@@ -168,9 +168,9 @@ exports.add_routes = function(app){
     
     
    // API JSON
-    app.get('/api', isAuth,  function(req, res){
+    app.get('/api', utils.isAuth,  function(req, res){
     
-        var client = createClient(app);
+        var client = createClient(app, req, res);
         client.connect();
         client.on('connect', function(){
             client.openMailbox("INBOX", function(error, info){

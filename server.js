@@ -1,6 +1,7 @@
 // web.js   
 var express = require("express");
 var logfmt = require("logfmt");
+var utils = require('./utils/utils');
 var app = express();
 
 app.use(logfmt.requestLogger());
@@ -24,9 +25,8 @@ controllers.forEach(function(crtl){
     
 });
 
-
 // home redirect
-app.get('/', function(req, res){
+app.get('/', utils.isAuth, function(req, res){
     res.render('home');
 })
 

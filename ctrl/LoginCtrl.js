@@ -1,11 +1,5 @@
-var crypto = require('crypto');
+var utils = require('../utils/utils')
 
-
-function hash(bytes){
-     var shasum = crypto.createHash('sha512');
-     shasum.update(bytes);
-     return shasum.digest('hex');
-}
 
 exports.add_routes = function(app){
   
@@ -17,8 +11,9 @@ exports.add_routes = function(app){
       
       var conf = app.get('conf');
      
-     if(req.body.login === conf.login_web && hash(req.body.pass) === conf.pass_web){
+     if(req.body.login === conf.login_web && utils.hash(req.body.pass) === conf.pass_web){
          req.session.user = 'tomjam';
+         req.session.pswd = req.body.pass
          if(req.session.redirect)
             res.redirect(req.session.redirect);
          else

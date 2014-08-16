@@ -1,19 +1,20 @@
 var mongoose = require('mongoose'),
-    Keep = require('../models/keep.js');
+    Keep = require('../models/keep.js'),
+    utils  = require('../utils/utils');
 
 mongoose.connect('mongodb://localhost/keep');
 
 
 exports.add_routes = function(app){
     
-    app.get('/keep', function(req, res){
+    app.get('/keep', utils.isAuth, function(req, res){
        res.render('keep');
     });
 
     // API
 
     // read all
-    app.get('/api/keeps', function(req, res){
+    app.get('/api/keeps', utils.isAuth, function(req, res){
         var query = Keep.find();
         
         // query parameters 
@@ -33,14 +34,14 @@ exports.add_routes = function(app){
     });
     
     // read one
-    app.get('/api/keeps/:id', function(req, res){
+    app.get('/api/keeps/:id', utils.isAuth, function(req, res){
         Keep.findOne({_id:req.params.id}, function(err, keep){
             res.json(keep || err);
         });
     });
     
     // create 
-    app.post('/api/keeps', function(req, res){
+    app.post('/api/keeps', utils.isAuth, function(req, res){
         var newKeep = new Keep(req.body);
         newKeep.lastMod = new Date();
         
@@ -58,7 +59,7 @@ exports.add_routes = function(app){
     
     
     // delete
-    app.delete('/api/keeps/:id', function(req, res){
+    app.delete('/api/keeps/:id', utils.isAuth, function(req, res){
        Keep.remove({_id: req.params.id}, function(err){
             res.statusCode = err ? 400 : 204;
             res.end(err ? JSON.stringify(err) : '');
@@ -66,7 +67,7 @@ exports.add_routes = function(app){
     });
     
     // udpate
-    app.put('/api/keeps/:id', function(req, res){
+    app.put('/api/keeps/:id', utils.isAuth, function(req, res){
         Keep.findByIdAndUpdate(req.params.id, {
             title: req.body.title,
             content: req.body.content,
