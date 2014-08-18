@@ -12,12 +12,7 @@ function tojson(obj){
 function createClient(app, req, res){
 
     var pswd    = req.session.pswd;
-console.log(pswd);
-
-
     var decrypt = utils.decrypt(pswd, app.get('conf').pass);
-console.log(decrypt);
-
 
     if (!pswd || !decrypt){
         res.redirect('login');

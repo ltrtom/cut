@@ -1,8 +1,13 @@
 // web.js   
-var express = require("express");
-var logfmt = require("logfmt");
-var utils = require('./utils/utils');
-var app = express();
+var express   = require("express");
+	logfmt    = require("logfmt"),
+	utils     = require('./utils/utils'),
+	path      = require('path'),
+	http      = require('http'),
+	https     = require('https'),
+	fs        = require('fs'),
+	commander = require('commander'),
+	app       = express();
 
 app.use(logfmt.requestLogger());
 app.use(express.cookieParser());
@@ -15,6 +20,7 @@ app.locals.moment = require('moment');
 
 var confFile = require('./conf/conf.json');
 app.set('conf', confFile);
+app.set('path', path.dirname(require.main.filename));
 
 
 var controllers = ['LoginCtrl', 'InboxCtrl', 'keepCtrl'];
@@ -31,8 +37,30 @@ app.get('/', utils.isAuth, function(req, res){
 })
 
 
+// opt parse
+commander
+  .option('-e, --env <env>', 'environment')
+  .option('-c, --certificate-dir <path>', 'SSL certificate dir')
+  .parse(process.argv);
 
+app.set('_env', commander.env || 'PRD');
+
+
+// the certificates are mandatory to start the server on HTTPS
+if (commander.certificateDir){
+
+	var credentials = {
+		key: fs.readFileSync(path.join(commander.certificateDir, 'server.key')).toString(),
+		cert: fs.readFileSync(path.join(commander.certificateDir, 'server.crt')).toString()
+	};
+	var httpsServer = https.createServer(credentials, app);
+	
+	httpsServer.listen(443);
+	console.log('listening on port 443');
+}
+
+
+var httpServer = http.createServer(app);
 var port = Number(process.env.PORT || 5000);
-app.listen(port, function() {
-  console.log("Listening on " + port);
-});
+httpServer.listen(port);
+console.log('listening on port '+port);

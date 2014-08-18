@@ -14,6 +14,14 @@ exports.add_routes = function(app){
      if(req.body.login === conf.login_web && utils.hash(req.body.pass) === conf.pass_web){
          req.session.user = 'tomjam';
          req.session.pswd = req.body.pass
+
+         var sess = utils.hash(Math.random().toString());
+         res.cookie('rememberMe', sess, { maxAge: 900000, httpOnly: true });
+
+         if (app.get('_env') !== 'PRD'){
+            utils.rememberMe(app, sess, req.session.user+':'+req.session.pswd);
+         }
+
          if(req.session.redirect)
             res.redirect(req.session.redirect);
          else
@@ -29,8 +37,13 @@ exports.add_routes = function(app){
 
   app.get('/logout', function(req, res){
     req.session.destroy(function(){
-            res.redirect('/login');
-    });
+      utils.removeSess(app, req.cookies.rememberMe);
+      res.redirect('/login');
+    });  
   });
 
-};
+  app.get('/poc', function(req, res){
+    res.json(req.cookies);   
+  });
+
+}; 
