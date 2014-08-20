@@ -80,14 +80,20 @@ exports.removeSess = function(app, cookiesid){
 			fs.unlink(filepath);
 		}
 	});
-
-}
+};
 
 
 exports.getKeysDir = function(app){
 	return path.resolve(app.get('path'), '..', 'keys');
+};
 
+exports.redirectToHttps = function(req, res, next){
+	if (!req.secure){
+		var host = req.get('host').split(':')[0]; //remove the port
+		res.redirect('https://' + host + req.originalUrl);		
+	}
+	else{
+		next();
+	}
 }
-
-
 

@@ -3,5 +3,6 @@
     "pass_web" : "b639a4b84da9c76f96d73648653c41830e9ee6e5fa9705caf5e85417a25e5f851def089ef5124374b5fa536c6a556aa700b7c7204c59a88c2f02d3d01b2f6e69",
     "email"    : "ltrtom@gmail.com",
     "pass"     : "1dc2b5e260866bb44bcb1009fc93ffb8",
-    "default_mailbox": "INBOX"
+    "default_mailbox": "INBOX",
+    "env"      : "DEV"
 }

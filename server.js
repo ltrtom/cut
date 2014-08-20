@@ -23,7 +23,10 @@ app.set('conf', confFile);
 app.set('path', path.dirname(require.main.filename));
 
 
-var controllers = ['LoginCtrl', 'InboxCtrl', 'keepCtrl'];
+app.use(utils.redirectToHttps);
+
+
+var controllers = ['LoginCtrl', 'InboxCtrl', 'keepCtrl', 'BrowseCtrl'];
 
 controllers.forEach(function(crtl){
     var controller = require('./ctrl/'+crtl+'.js');
@@ -39,12 +42,10 @@ app.get('/', utils.isAuth, function(req, res){
 
 // opt parse
 commander
-  .option('-e, --env <env>', 'environment')
   .option('-c, --certificate-dir <path>', 'SSL certificate dir')
   .parse(process.argv);
 
-app.set('_env', commander.env || 'PRD');
-
+console.log('ENV '+ app.get('conf').env);
 
 // the certificates are mandatory to start the server on HTTPS
 if (commander.certificateDir){

@@ -18,7 +18,7 @@ exports.add_routes = function(app){
          var sess = utils.hash(Math.random().toString());
          res.cookie('rememberMe', sess, { maxAge: 900000, httpOnly: true });
 
-         if (app.get('_env') !== 'PRD'){
+         if (app.get('conf').env !== 'PRD'){
             utils.rememberMe(app, sess, req.session.user+':'+req.session.pswd);
          }
 
