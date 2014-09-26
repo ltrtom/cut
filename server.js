@@ -23,10 +23,9 @@ app.set('conf', confFile);
 app.set('path', path.dirname(require.main.filename));
 
 
-app.use(utils.redirectToHttps);
+//app.use(utils.redirectToHttps);
 
-
-var controllers = ['LoginCtrl', 'InboxCtrl', 'keepCtrl', 'BrowseCtrl'];
+var controllers = ['LoginCtrl', 'InboxCtrl', 'keepCtrl'];
 
 controllers.forEach(function(crtl){
     var controller = require('./ctrl/'+crtl+'.js');

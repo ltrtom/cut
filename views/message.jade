@@ -4,7 +4,8 @@ block content
     if error
       .alert.alert-danger= error
     else
-      a(href='/mail/'+params.mailbox+'/'+params.uid+'/delete').btn.btn-danger: span.glyphicon.glyphicon-trash 
+      a(href='/mail/'+params.mailbox) back
+      a(href='/mail/'+params.mailbox+'/'+params.uid+'/delete').btn.btn-danger.pull-right: span.glyphicon.glyphicon-trash
       div.well
         if html
           !=html

@@ -6,10 +6,14 @@ var mongoose = require('mongoose')
 var keepSchema = new Schema({
      title: String,
      content: String,
+     type: String,
+     items: Array,
+     archived: Boolean,
      date: {type: Date, default: Date.now},
-     lastMod: Date
+     lastMod: {type: Date, default: null}
+
+
 });
- 
- 
+
 module.exports = mongoose.model('Keep', keepSchema);
    

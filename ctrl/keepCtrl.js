@@ -14,7 +14,7 @@ exports.add_routes = function(app){
     // API
 
     // read all
-    app.get('/api/keeps', utils.isAuth, function(req, res){
+    app.get('/services/keeps', utils.isAuth, function(req, res){
         var query = Keep.find();
         
         // query parameters 
@@ -34,7 +34,7 @@ exports.add_routes = function(app){
     });
     
     // read one
-    app.get('/api/keeps/:id', utils.isAuth, function(req, res){
+    app.get('/services/keeps/:id', utils.isAuth, function(req, res){
         Keep.findOne({_id:req.params.id}, function(err, keep){
             res.json(keep || err);
         });
@@ -59,7 +59,7 @@ exports.add_routes = function(app){
     
     
     // delete
-    app.delete('/api/keeps/:id', utils.isAuth, function(req, res){
+    app.delete('/services/keeps/:id', utils.isAuth, function(req, res){
        Keep.remove({_id: req.params.id}, function(err){
             res.statusCode = err ? 400 : 204;
             res.end(err ? JSON.stringify(err) : '');
@@ -67,7 +67,7 @@ exports.add_routes = function(app){
     });
     
     // udpate
-    app.put('/api/keeps/:id', utils.isAuth, function(req, res){
+    app.put('/services/keeps/:id', utils.isAuth, function(req, res){
         Keep.findByIdAndUpdate(req.params.id, {
             title: req.body.title,
             content: req.body.content,

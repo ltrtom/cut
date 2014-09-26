@@ -11,8 +11,13 @@ function tojson(obj){
 
 function createClient(app, req, res){
 
-    var pswd    = req.session.pswd;
-    var decrypt = utils.decrypt(pswd, app.get('conf').pass);
+
+    // the gmail password is encrypted and saved into database
+    // to decrypt it, we use the plainPassword saved in session as key
+
+    var pswd    = req.session.user.plainPassword;
+    var decrypt = utils.decrypt(pswd, req.session.user.gmailPassword);
+
 
     if (!pswd || !decrypt){
         res.redirect('login');
@@ -21,7 +26,7 @@ function createClient(app, req, res){
     return inbox.createConnection(false, "imap.gmail.com", {
             secureConnection: true,
             auth:{
-                user: app.get('conf').email,
+                user: req.user.gmailAdress,
                 pass: decrypt
             }
         });
@@ -45,19 +50,24 @@ exports.add_routes = function(app){
         client.connect();
         client.on('connect', function(){
             client.openMailbox(mailbox, function(error, info){
-                if(error)
-                    throw error;
-                client.listMessages(-15, function(err, messages){
-                    // take last 15 messages
-                    render.messages = messages.reverse();
-                    // get all mailboxes
-                    client.listMailboxes(function(err, mailboxes){
-                        if(err)
-                            throw err;
-                        render.mailboxes = mailboxes;
-                        client.close();
+                if(error){
+                    console.log(error);
+                    render.error = error.message;
+                    client.close();
+                }
+                else{
+                    client.listMessages(-15, function(err, messages){
+                        // take last 15 messages
+                        render.messages = messages.reverse();
+                        // get all mailboxes
+                        client.listMailboxes(function(err, mailboxes){
+                            if(err)
+                                throw err;
+                            render.mailboxes = mailboxes;
+                            client.close();
+                        });
                     });
-                });
+                }
             });
             
             client.on('close', function(){

@@ -1,28 +1,45 @@
 var crypto = require('crypto'),
     fs     = require('fs'),
-    path   = require('path');
-
+    path   = require('path'),
+    User   = require('../models/user');
 
 exports.isAuth = function(req, res, next){
 	if (req.session.user)
 		next();
 	else{
-		var sess = req.cookies.rememberMe;
-		if (sess){
 
-			var filepath = path.join(req.app.get('path'), 'sessions', exports.hash(sess).substr(0, 15));
+        // check for a token in the headers
+        var token = (req.headers['authorization'] || '').replace('Bearer ', '');
+        var sess = req.cookies.rememberMe;
 
-			fs.readFile(filepath, function (err, data) {
-			  if (!err){
-			  	var split = data.toString().split(':');
-			  	req.session.user = split[0];
-			  	req.session.pswd = split[1];
-			  	next();
-			  }
-			  else{
-				res.redirect('login');		  	
-			  }
-			});
+        if(token){
+            User.findOne({token: token}, function(err, user){
+
+                if (err){console.log(err);}
+                if (user){
+                    next();
+                }
+                else{
+                    res.statusCode = 401;
+                    res.send('Wrong access token')
+                }
+            });
+
+        }
+        else if (sess){
+
+            User.findOne({token: sess}, function(err, user){
+
+                if (err){console.log(err);}
+                if (user){
+                    req.session.user = user;
+                    next();
+                }
+                else{
+                    res.redirect('login');
+                }
+            });
+
 		}
 		else{
 			res.redirect('login');	   
@@ -57,35 +74,6 @@ exports.hash = function(bytes){
 	return shasum.digest('hex');
 };
 
-
-exports.rememberMe = function(app, cookiesid, data){
-
-	var filepath = path.join(app.get('path'), 'sessions', exports.hash(cookiesid).substr(0, 15));
-
-	fs.writeFile(filepath, data, function(err){
-		if (err) return console.log(err);
-		console.log('DONE : ' +filepath);   
-	});
-};
-
-exports.removeSess = function(app, cookiesid){
-
-	if (!cookiesid){
-		return;
-	}
-
-	var filepath = path.join(app.get('path'), 'sessions', exports.hash(cookiesid).substr(0, 15));
-	fs.exists(filepath, function(exists){
-		if (exists){
-			fs.unlink(filepath);
-		}
-	});
-};
-
-
-exports.getKeysDir = function(app){
-	return path.resolve(app.get('path'), '..', 'keys');
-};
 
 exports.redirectToHttps = function(req, res, next){
 	if (!req.secure){
