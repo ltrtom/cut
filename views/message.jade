@@ -2,7 +2,8 @@ extends index
 
 block content
     if error
-      .alert.alert-danger= error
+      .alert.alert-danger
+        =error
     else
       a(href='/mail/'+params.mailbox) back
       a(href='/mail/'+params.mailbox+'/'+params.uid+'/delete').btn.btn-danger.pull-right: span.glyphicon.glyphicon-trash

@@ -48,7 +48,7 @@ table.inbox{
     margin: auto;
 }
 
-#form-keep input, textarea, button{ 
+#form-keep input, textarea{
     margin-top: 5px;
 }
 
@@ -76,8 +76,25 @@ section#keeps{
     cursor: pointer;
 }
 
-.keeps-list .keep{
-    
+.keeps-list{
+    margin-top: 50px;
 }
 
 
+.line-through{
+    text-decoration: line-through;
+}
+
+.invisible-textbox{
+    width: 200px;
+    border: none !important;
+    display: inline !important;
+}
+
+.query{
+    width: 300px;
+}
+
+.btn-archi{
+    margin-right: 20px;
+}

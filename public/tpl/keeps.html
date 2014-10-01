@@ -1,30 +1,23 @@
 <div ng-controller="KeepsCtrl">
-    <button ng-click="current = {}" class="btn btn-default">Clear</button>
-    <input type="text" ng-model="query">
-    <button data-ng-click="removeKeep()" class="btn btn-danger" ng-show="current._id">Del</button>
-    <form method="POST" ng-submit="submitKeep()" id="form-keep">
-        <input name="title" type="text" ng-model="current.title" placeholder="title" class="form-control">
-        <textarea name="content" name="content" ng-model="current.content" placeholder="content" class="form-control"/>
-        <input type="submit" class="btn btn-primary pull-right" value="{{current._id ? 'Update' : 'Add'}}">
-    </form>
-    <div class="btn-group">
-        <button type="button" class="btn btn-default" ng-click="view.mode = 'list'" ng-class="view.mode == 'list' ? 'active' : ''"><span class="glyphicon glyphicon-list"></span></button>
-        <button type="button" class="btn btn-default" ng-click="view.mode = 'table'" ng-class="view.mode == 'table' ? 'active' : ''"><span class="glyphicon glyphicon-th-large"></span></button>
-    </div>
-    <section class="keeps-table" ng-show="view.mode=='table'">
-        <article ng-repeat="keep in keeps" class="keep" data-ng-click="showOne(keep._id)">
-            <p class="lead">
-                {{keep.title}}
-            </p>
-            <p class="content">{{keep.content | truncate: 15}}</p>
-            <span class="label label-default">{{keep.date | date: 'medium'}}</span>
-        </article>
-    </section>
-    <ul class="keeps-list" ng-show="view.mode=='list'">
+    <a class="btn btn-primary pull-right" href="" ng-click="showForm()">New</a>
+    <button class="btn btn-info pull-right btn-archi" ng-model="seeArchived" ng-click="doSeeArchived()" btn-checkbox btn-checkbox-true="true" btn-checkbox-false="false">Only archived</button>
+    <input type="search" class="form-control input-lg query" ng-model="query">
+    <ul class="keeps-list">
         <li ng-repeat="keep in keeps" class="keep" >
-            <a href="" data-ng-click="showOne(keep._id)">{{keep.title}}</a>
+            <a href="" data-ng-click="showForm(keep)">{{keep.title}}</a>
             <span class="pull-right">{{keep.date | date: 'd/MM/yy HH:mm'}}</span>
-            <pre>{{keep.content}}</pre>
+            <div ng-switch on="keep.type">
+                <div ng-switch-when="note" >
+                   <pre ng-bind-html="keep.content | linky:'_blank'"></pre>
+                </div>
+                <div ng-switch-when="list" >
+                    <ul>
+                        <li ng-repeat="item in keep.items">
+                            <span ng-class="item.done ? 'line-through' : '' ">{{ item.content }}</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
         </li>
     </ul>
     <div class="alert alert-info mess" ng-hide="keeps">keeps not found</div>

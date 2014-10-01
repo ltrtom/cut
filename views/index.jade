@@ -3,10 +3,13 @@ html(ng-app='keeps')
   head
     block title 
       title Hello
-    script(src='https://code.jquery.com/jquery-2.1.0.min.js')
-    link(href='//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css', rel='stylesheet', type='text/css')
-    script(src='//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js')
-    link(href='/style.css', rel='stylesheet', type='text/css')
+    //script(src='https://code.jquery.com/jquery-2.1.0.min.js')
+    script(src='/js/lib/jquery-2.1.0.min.js')
+    //link(href='//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css', rel='stylesheet', type='text/css')
+    //script(src='//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js')
+    link(href='/css/bootstrap.min.css', rel='stylesheet', type='text/css')
+    script(src='/js/lib/bootstrap.min.js')
+    link(href='/css/style.css', rel='stylesheet', type='text/css')
   body.container
     block header
       header#header.well

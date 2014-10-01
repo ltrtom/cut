@@ -1,0 +1,10 @@
+<form method="POST" ng-submit="submitKeep()" id="form-keep">
+    <input name="title" type="text" ng-model="keep.title" placeholder="title" class="form-control">
+    <ul ng-init="initItems()">
+        <li ng-repeat="item in keep.items | orderBy:'done'" >
+            <input type="checkbox" ng-checked="item.done" ng-model="item.done">
+            <input type="text" class="form-control invisible-textbox" ng-class="item.done ? 'line-through' : ''" ng-model="item.content" ng-focus="addNewItem($index)">
+            <span class="glyphicon glyphicon-remove" ng-click="deleteItem(item)"></span>
+        </li>
+    </ul>
+</form>

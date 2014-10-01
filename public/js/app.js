@@ -1,5 +1,5 @@
 
-var app = angular.module('keeps', ['ngRoute', 'mgcrea.ngStrap']);
+var app = angular.module('keeps', ['ngRoute', 'ngSanitize', 'ui.bootstrap']);
 
 app.config(['$routeProvider' , function($routeProvider){
         $routeProvider.

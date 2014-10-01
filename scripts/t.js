@@ -1,37 +1,19 @@
 var mongoose = require('mongoose'),
-    Keep = require('../models/keep.js');
+    Keep = require('../models/keep'),
+    User = require('../models/user');
 
 mongoose.connect('mongodb://localhost/keep');
 
 
 
-
-var keep = new Keep({
-    type: 'list',
-    title: "bonjour",
-    items: [
-        {
-            content: "chips",
-            done: false
-        },
-        {
-            content: "café",
-            done: true
-        }
-    ],
-    archived: false
+User.findOne({login: 'tomjam'}, function(err, user){
+    if(err){
+        console.log(err);
+    }
+    else{
+        console.log(user.token);
+    }
 });
-
-
-keep.save(function (err, k){
-   if (err){throw err;}
-   console.log(k);
-
-   mongoose.disconnect();
-
-});
-
-
 
 
 

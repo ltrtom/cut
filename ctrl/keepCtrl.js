@@ -1,5 +1,6 @@
 var mongoose = require('mongoose'),
-    Keep = require('../models/keep.js'),
+    Keep = require('../models/keep'),
+    User = require('../models/user'),
     utils  = require('../utils/utils');
 
 mongoose.connect('mongodb://localhost/keep');
@@ -22,65 +23,88 @@ exports.add_routes = function(app){
            var filters = [];
            for(var k in req.query){
                var filter = {};
-               filter[k] = { $regex: new RegExp(req.query[k], 'i')};
+               var value = req.query[k];
+
+               if (value === 'true' || value === 'false'){
+                   filter[k] =  value === 'true' ? true : false;
+               }
+               else{
+                   filter[k] = { $regex: new RegExp(value, 'i')};
+               }
                filters.push(filter);
            }
+
            query.or(filters);
+           //console.log(filters);
         }
-        
+
+        query.sort('-lastMod');
+
         query.exec(function(err, keeps){
             res.json(keeps || err);
         });
     });
-    
+
     // read one
     app.get('/services/keeps/:id', utils.isAuth, function(req, res){
         Keep.findOne({_id:req.params.id}, function(err, keep){
-            res.json(keep || err);
+
+            if (err){
+                res.status(404).end();
+            }
+            else{
+                res.json(keep);
+            }
         });
     });
-    
-    // create 
-    app.post('/api/keeps', utils.isAuth, function(req, res){
+
+
+    // create
+    app.post('/services/keeps', utils.isAuth, function(req, res){
         var newKeep = new Keep(req.body);
         newKeep.lastMod = new Date();
         
         newKeep.save(function(err, keep){
             if(err){
-                res.statusCode = 400;
-                res.json(err);
+                res.status(400).json(err);
             }
             else{
-                res.statusCode = 201;
-                res.send('');
+                res.status(201).send();
+                User.notifyAccess(req.session.user._id);
             }
         });
+        User.notifyAccess(req.session.user._id);
+
     });
-    
-    
+
     // delete
     app.delete('/services/keeps/:id', utils.isAuth, function(req, res){
        Keep.remove({_id: req.params.id}, function(err){
-            res.statusCode = err ? 400 : 204;
-            res.end(err ? JSON.stringify(err) : '');
-       }); 
+           if (err){
+               res.status(400).end(JSON.stringify(err));
+           }
+           else{
+               res.status(204).end();
+           }
+       });
     });
     
     // udpate
     app.put('/services/keeps/:id', utils.isAuth, function(req, res){
-        Keep.findByIdAndUpdate(req.params.id, {
-            title: req.body.title,
-            content: req.body.content,
-            lastMod: new Date()
-        }, function(err, keep){
+
+        var update = req.body;
+        update.lastMod = new Date();
+        delete update['_id'];
+
+        Keep.findByIdAndUpdate(req.params.id, update, function(err, keep){
             if(err){
-                res.statusCode = 400;
-                res.json(err);
+                res.status(400).json(err);
                 return;
             }
-            res.statusCode = 204;
-            res.end();
+            User.notifyAccess(req.session.user._id);
+            res.status(204).end();
         });
+
     });
     
 };

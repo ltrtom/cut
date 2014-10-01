@@ -8,7 +8,7 @@ var keepSchema = new Schema({
      content: String,
      type: String,
      items: Array,
-     archived: Boolean,
+     archived: {type: Boolean, default: false},
      date: {type: Date, default: Date.now},
      lastMod: {type: Date, default: null}
 

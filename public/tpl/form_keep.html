@@ -1,0 +1,23 @@
+<div class="modal-header">
+    <h3 class="text-center">Keep</h3>
+    <div class="btn-group">
+        <button type="button" class="btn btn-default" ng-click="keep.type = 'list'" ng-class="keep.type == 'list' ? 'active' : ''"><span class="glyphicon glyphicon-list"></span></button>
+        <button type="button" class="btn btn-default" ng-click="keep.type = 'note'" ng-class="keep.type == 'note' ? 'active' : ''"><span class="glyphicon glyphicon-file"></span></button>
+    </div>
+</div>
+<div class="modal-body">
+    <div ng-switch on="keep.type">
+        <div ng-switch-when="note" >
+            <div ng-include="'/tpl/keep_note.partial.html'"></div>
+        </div>
+        <div ng-switch-when="list" >
+            <div ng-include="'/tpl/keep_list.partial.html'"></div>
+        </div>
+    </div>
+</div>
+<div class="modal-footer">
+    <button class="btn btn-inverse pull-left" ng-click="archive(!keep.archived)" ng-if="keep._id">{{ keep.archived ? 'Unarchived' : 'Archive' }}</button>
+    <button class="btn btn-danger pull-left" ng-click="delete()" ng-if="keep._id">Delete</button>
+    <button class="btn btn-primary" ng-click="submit()">{{keep._id ? 'Update' : 'Add'}}</button>
+    <button class="btn btn-warning" ng-click="cancel()">Cancel</button>
+</div>

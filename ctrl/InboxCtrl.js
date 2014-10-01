@@ -15,9 +15,8 @@ function createClient(app, req, res){
     // the gmail password is encrypted and saved into database
     // to decrypt it, we use the plainPassword saved in session as key
 
-    var pswd    = req.session.user.plainPassword;
+    var pswd    = req.session.plainPassword;
     var decrypt = utils.decrypt(pswd, req.session.user.gmailPassword);
-
 
     if (!pswd || !decrypt){
         res.redirect('login');
@@ -26,7 +25,7 @@ function createClient(app, req, res){
     return inbox.createConnection(false, "imap.gmail.com", {
             secureConnection: true,
             auth:{
-                user: req.user.gmailAdress,
+                user: req.session.user.gmailAdress,
                 pass: decrypt
             }
         });
@@ -34,16 +33,18 @@ function createClient(app, req, res){
 
 exports.add_routes = function(app){
     
-    
+
     // INDEX MAILBOX
-    app.get('/mail/:mailbox?', utils.isAuth, function(req, res){  
+    app.get('/mail/:mailbox?', utils.isAuth, function(req, res){
         
        var mailbox = req.params.mailbox;
        
        if(!mailbox)
            mailbox = app.get('conf').default_mailbox;
        var render = {
-           currentMailbox: mailbox
+           currentMailbox: mailbox,
+           mailboxes: [],
+           messages: []
        };
        
        var client = createClient(app, req, res);

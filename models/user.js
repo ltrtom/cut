@@ -12,5 +12,20 @@ var userSchema = new Schema({
      lastAccess: {type: Date, default: Date.now}
 });
 
+userSchema.statics.notifyAccess = function(id){
+
+    this.findByIdAndUpdate(id, {lastAccess: new Date()}, function(err, user){
+        if(err){
+            console.log(err);
+        }
+        else{
+            console.log('User %s has been notified', user.login);
+        }
+
+    });
+
+};
+
+
 module.exports = mongoose.model('User', userSchema);
    

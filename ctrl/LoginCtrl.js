@@ -20,7 +20,7 @@ exports.add_routes = function(app){
 
           if (user){
               req.session.user = user;
-              req.session.user.plainPassword = req.body.pass;
+              req.session.plainPassword = req.body.pass;
 
               if (app.get('conf').env !== 'PRD'){
 
@@ -30,7 +30,8 @@ exports.add_routes = function(app){
                       req.session.user.save();
 
                   }
-                  res.cookie('rememberMe', req.session.user.token, { maxAge: 900000, httpOnly: true });
+
+                  res.cookie('rememberMe', req.session.user.token, { maxAge: 1000 * 60 * 60 * 24, httpOnly: true });
               }
 
               if(req.session.redirect)
